@@ -96,7 +96,7 @@ barerouter uses GitHub review threads with resolution status. Only unresolved th
 The REST endpoint `/pulls/{pr}/reviews` returns review summaries, not individual review comments. Use the GraphQL API to access `reviewThreads` with `isResolved` status:
 
 ```bash
-gh api graphql -F owner=cozystack -F repo=barerouter -F pr=<PR_NUMBER> -f query='
+gh api graphql -F owner=aenix-io -F repo=barerouter -F pr=<PR_NUMBER> -f query='
 query($owner: String!, $repo: String!, $pr: Int!) {
   repository(owner: $owner, name: $repo) {
     pullRequest(number: $pr) {
@@ -124,7 +124,7 @@ query($owner: String!, $repo: String!, $pr: Int!) {
 Compact one-line variant:
 
 ```bash
-gh api graphql -F owner=cozystack -F repo=barerouter -F pr=<PR_NUMBER> -f query='
+gh api graphql -F owner=aenix-io -F repo=barerouter -F pr=<PR_NUMBER> -f query='
 query($owner: String!, $repo: String!, $pr: Int!) {
   repository(owner: $owner, name: $repo) {
     pullRequest(number: $pr) {

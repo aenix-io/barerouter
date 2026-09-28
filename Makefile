@@ -26,7 +26,7 @@ OUT     ?= _out
 
 ISO        := $(OUT)/barerouter-$(VERSION)-$(ARCH).iso
 DISK       := $(OUT)/barerouter-$(VERSION)-kubevirt-$(ARCH).qcow2
-DISK_IMAGE ?= ghcr.io/cozystack/barerouter/kubevirt-disk
+DISK_IMAGE ?= ghcr.io/aenix-io/barerouter/kubevirt-disk
 
 export VYOS_BUILD_IMAGE VYOS_BUILD_REF VYOS_MIRROR VERSION ARCH OUT KUBEVIRT_DEB_URLS KUBEVIRT_DEB_SHA256
 

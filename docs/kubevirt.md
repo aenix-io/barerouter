@@ -3,7 +3,7 @@
 Each release carries a second artifact next to the ISO: the ISO installed onto a disk and turned into a KubeVirt appliance. The ISO is never modified for it; someone who wants the plain router takes the ISO, someone who runs it as a KubeVirt VM takes the disk.
 
 - `barerouter-<version>-kubevirt-amd64.qcow2`, its `.sha256`, and its own `.sources.md`, which is the ISO's plus what the disk adds.
-- `ghcr.io/cozystack/barerouter/kubevirt-disk:<version>`, the same qcow2 as a containerDisk at `/disk/barerouter.qcow2`, which KubeVirt and CDI's registry importer both read and which can be pinned by digest.
+- `ghcr.io/aenix-io/barerouter/kubevirt-disk:<version>`, the same qcow2 as a containerDisk at `/disk/barerouter.qcow2`, which KubeVirt and CDI's registry importer both read and which can be pinned by digest.
 
 The disk is built by `hack/build-disk.sh` from the ISO and the vyos-build tree of the same run: `build-vyos-image --reuse-iso` with `kubevirt/flavor.toml` makes a 10 GB raw disk with the serial console on `ttyS0` at 115200, and `kubevirt/inject-appliance.sh` adds the appliance to it.
 

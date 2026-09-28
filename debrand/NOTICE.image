@@ -1,7 +1,7 @@
 BareRouter
 
 This image is built by the barerouter project
-(https://github.com/cozystack/barerouter) from the public rolling-release
+(https://github.com/aenix-io/barerouter) from the public rolling-release
 sources published at https://github.com/vyos. It is not produced, endorsed or
 supported by the authors of those sources, and it carries none of their
 trademarks or logos.

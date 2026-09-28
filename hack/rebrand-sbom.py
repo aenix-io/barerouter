@@ -13,7 +13,7 @@ import json
 import sys
 
 NAME = "BareRouter"
-REPO_URL = "https://github.com/cozystack/barerouter"
+REPO_URL = "https://github.com/aenix-io/barerouter"
 
 src, dst, version = sys.argv[1], sys.argv[2], sys.argv[3]
 with open(src, encoding="utf-8") as f:

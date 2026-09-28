@@ -17,7 +17,7 @@ import sys
 import zlib
 
 NAME = "BareRouter"
-REPO_URL = "https://github.com/cozystack/barerouter"
+REPO_URL = "https://github.com/aenix-io/barerouter"
 
 tree, repo = sys.argv[1], sys.argv[2]
 

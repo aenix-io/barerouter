@@ -68,5 +68,7 @@ jobs:
             _out/barerouter-*.spdx.json
             _out/barerouter-*.packages.tsv
             _out/barerouter-*.sources.md
+            _out/barerouter-*.vyos-build.tar.gz
+            _out/barerouter-*.refs.lock
           retention-days: 7
           if-no-files-found: error

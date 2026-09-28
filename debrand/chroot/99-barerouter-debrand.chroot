@@ -14,7 +14,7 @@ import re
 import sys
 
 NAME = "BareRouter"
-REPO_URL = "https://github.com/cozystack/barerouter"
+REPO_URL = "https://github.com/aenix-io/barerouter"
 # "/" inside the live-build chroot; hack/test-debrand-hook.sh points it at an
 # unpacked vyos-1x package instead.
 ROOT = os.environ.get("DEBRAND_ROOT", "/")

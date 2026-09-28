@@ -30,6 +30,18 @@ git -C "$WORK" checkout -q -B rolling "$VYOS_BUILD_REF"
 
 python3 "${REPO_ROOT}/hack/debrand-tree.py" "$WORK" "$REPO_ROOT"
 
+# The tree the image is built from, as it is at this point: every package-build
+# definition, patch, kernel configuration and build script, with the debranding
+# edits. It is part of the corresponding source a release points to.
+tar -C "$WORK" --exclude=.git -czf "${DEST}/${NAME}.vyos-build.tar.gz" .
+
+# The VyOS package index as the build sees it. The rolling repository publishes
+# several times a day, so an index fetched after an hour of building may no
+# longer list the version that was installed, and the manifests would then
+# attribute a VyOS package to Debian.
+export VYOS_INDEX="${REPO_ROOT}/${OUT}/vyos-index.Packages.gz"
+curl -fsSL -o "$VYOS_INDEX" "${VYOS_MIRROR}/dists/rolling/main/binary-${ARCH}/Packages.gz"
+
 # build-vyos-image generates an SBOM with syft, which the container image does
 # not always carry. Pinned by checksum so a release is not built with whatever
 # the download happens to serve.
@@ -84,6 +96,7 @@ if [ ! -s "${WORK}/build/packages.tsv" ]; then
   exit 1
 fi
 cp "${WORK}/build/packages.tsv" "${DEST}/${NAME}.packages.tsv"
+python3 "${REPO_ROOT}/hack/refs-lock.py" "$WORK" "${DEST}/${NAME}.packages.tsv" "${DEST}/${NAME}.refs.lock"
 python3 "${REPO_ROOT}/hack/source-manifest.py" "${DEST}/${NAME}.packages.tsv" "${DEST}/${NAME}.sources.md" "$VERSION"
 
 (cd "$DEST" && sha256sum "${NAME}.iso" > "${NAME}.iso.sha256")

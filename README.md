@@ -15,7 +15,8 @@ barerouter is not produced, endorsed or supported by VyOS Inc. VyOS and the VyOS
 - `barerouter-<version>-amd64.cdx.json` and `.spdx.json`, the SBOM in CycloneDX and SPDX
 - `barerouter-<version>-amd64.packages.tsv`, every installed binary package with its source package and version
 - `barerouter-<version>-amd64.sources.md`, where the source of each of those packages is: the snapshot.debian.org page of the exact Debian source version, or the VyOS repository and the vyos-build scripts it was built from
-- `barerouter-<version>-kubevirt-amd64.qcow2`, its `.sha256` and `.sources.md`, and the same disk as the containerDisk `ghcr.io/cozystack/barerouter/kubevirt-disk:<version>`: the ISO installed and turned into a KubeVirt appliance, described in [`docs/kubevirt.md`](./docs/kubevirt.md). The ISO itself is published unmodified.
+- `barerouter-<version>-amd64.vyos-build.tar.gz`, the vyos-build tree the image was built from, and `barerouter-<version>-amd64.refs.lock`, every upstream repository and reference in it resolved to the commit it named on the day of the build
+- `barerouter-<version>-kubevirt-amd64.qcow2`, its `.sha256` and `.sources.md`, and the same disk as the containerDisk `ghcr.io/aenix-io/barerouter/kubevirt-disk:<version>`: the ISO installed and turned into a KubeVirt appliance, described in [`docs/kubevirt.md`](./docs/kubevirt.md). The ISO itself is published unmodified.
 
 ## Building
 

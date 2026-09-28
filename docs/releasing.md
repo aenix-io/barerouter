@@ -27,6 +27,15 @@ The container digest moves the same way: read the digest of `vyos/vyos-build:rol
 
 A tag can stop being rebuildable: once the mirror drops the kernel its pin names, re-running `release.yml` for it fails. The published release stays as it is; a new release moves the pin.
 
+## Corresponding source
+
+Every image is a collection of GPL-licensed packages, so a release has to make their corresponding source available to anyone who receives the image. barerouter does it in two parts.
+
+- **Pointers, published with the release.** `.sources.md` links every Debian source package to its exact version on snapshot.debian.org, which Debian never removes. For the packages VyOS builds, `.vyos-build.tar.gz` carries the vyos-build tree the image was built from, with every package-build definition, patch and kernel configuration, and `.refs.lock` resolves every upstream repository and reference in it to the commit it named on the day of the build. The KubeVirt disk's `.sources.md` adds the two Debian packages it installs and points at this repository's tag for the rest.
+- **A written offer.** For what is only pointed to, GPLv2 section 3(b) needs an offer, valid for three years from each release, to give any third party the complete corresponding source for no more than the cost of performing the distribution. The offer is in `debrand/NOTICE.image`, which the image carries at `/usr/share/vyos/EULA`, and the release job refuses to publish while it is missing.
+
+Whoever gives the offer has to be able to honour it for three years, including when an upstream has since deleted a commit the lock names. Moving to a full source archive removes that dependency: fetch every repository in `.refs.lock` at its commit, the kernel tarball, and the sources the package-build scripts download themselves, and publish them with the release. The lock and the tree are the input for that; nothing else in the build has to change.
+
 ## Consumers
 
 cozystack's site-router pins a release by the ISO's URL and SHA256 and turns it into its appliance disk. Moving it to a new release is a pull request there that updates both, and re-captures its `config.boot` from the new image as its own documentation describes.
