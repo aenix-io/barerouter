@@ -1,0 +1,14 @@
+/_out/
+__pycache__/
+CLAUDE.local.md
+
+# Agent tooling. The md-no-hardwrap hook and its registration are shared with
+# every contributor, so they are tracked by name; personal agent state (local
+# settings overrides, worktrees, session data) stays out of git. Put personal
+# overrides in .claude/settings.local.json -- .claude/settings.json is tracked
+# and git will overwrite it on pull.
+.claude/*
+!.claude/hooks/
+.claude/hooks/*
+!.claude/hooks/md-no-hardwrap.py
+!.claude/settings.json
