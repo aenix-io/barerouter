@@ -67,4 +67,37 @@ for f in $dropins; do
   esac
 done
 
+# The diagnostics emitter. Its install path is part of the disk's interface
+# (docs/kubevirt.md): a consumer's cron entry names it, and nothing at runtime
+# says anything when the two disagree. cron adds rules of its own that fail just
+# as silently, so they are pinned here against the seed that does the install.
+SEED="${REPO_ROOT}/kubevirt/overlay/vyos-appliance-seed.sh"
+EMITTER=/usr/local/sbin/cozy-guest-diag.sh
+installed="$(grep -oE 'install -m 0755 [^ ]+ (/[^ ]+)' "$SEED" | head -1 | awk '{print $NF}')"
+# Not under /config: vyos-router mounts the persistent configuration over it
+# while it starts, after the seed has run, so a file there is gone before cron
+# ever reads it.
+expect "the seed installs the emitter at the documented path, outside /config" "$installed" "$EMITTER"
+
+cronfile="$(grep -oE '/etc/cron\.d/[A-Za-z0-9._-]+' "$SEED" | head -1)"
+case "${cronfile##*/}" in
+  "") echo "FAIL: the seed installs no /etc/cron.d entry" >&2; failed=1 ;;
+  *.*) echo "FAIL: the seed installs cron.d entry ${cronfile##*/}, and cron ignores a name with a dot" >&2; failed=1 ;;
+  *) echo "ok: cron.d entry ${cronfile##*/} has a name cron reads" ;;
+esac
+if [ -n "$cronfile" ] && grep -qE "install -m 0644 [^ ]+ ${cronfile}" "$SEED"; then
+  echo "ok: the cron.d entry is installed 0644, which cron requires"
+else
+  echo "FAIL: the seed does not install ${cronfile:-its cron.d entry} mode 0644" >&2
+  failed=1
+fi
+# A logged success that did not check the install is how a shadowed path once
+# survived every run.
+if grep -q 'if install -m 0755' "$SEED"; then
+  echo "ok: the seed checks the emitter install before reporting it"
+else
+  echo "FAIL: the seed reports the emitter install without checking it" >&2
+  failed=1
+fi
+
 exit "$failed"
