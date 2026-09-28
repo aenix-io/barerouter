@@ -1,0 +1,14 @@
+BareRouter
+
+This image is built from the public VyOS rolling sources
+(https://github.com/vyos) by the barerouter project
+(https://github.com/cozystack/barerouter). It is not produced, endorsed or
+supported by VyOS Inc., and it carries none of the VyOS trademarks or logos.
+
+The image is a collection of free software components. Each component is
+licensed under its own terms; the license of every installed package is under
+/usr/share/doc/<package>/copyright. The corresponding source code for this
+image is published next to it on the barerouter release page.
+
+THERE IS NO WARRANTY FOR THIS SOFTWARE, TO THE EXTENT PERMITTED BY APPLICABLE
+LAW.

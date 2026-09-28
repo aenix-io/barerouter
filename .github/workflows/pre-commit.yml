@@ -28,10 +28,10 @@ jobs:
           persist-credentials: false
 
       - name: shellcheck
-        run: shellcheck hack/*.sh debrand/chroot/*.chroot
+        run: shellcheck hack/*.sh
 
       - name: Python syntax
-        run: python3 -m py_compile hack/*.py
+        run: python3 -m py_compile hack/*.py debrand/chroot/*.chroot
 
   # Commit-message lint for the attribution rules in docs/agents/contributing.md
   # that a reviewer would otherwise have to read `git log` to catch. It lives
