@@ -8,6 +8,7 @@
 # identifiers such as ID=vyos, /usr/libexec/vyos and the vyos user are code,
 # not branding, and stay. docs/debranding.md lists both sides.
 import glob
+import json
 import os
 import re
 import sys
@@ -137,6 +138,77 @@ for root in (at("/opt/vyatta/share/vyatta-cfg/templates"), at("/opt/vyatta/share
 if changed == 0:
     sys.exit("E: no CLI help text mentioned VyOS; the template layout has moved")
 print(f"I: rewrote {changed} CLI help lines")
+
+# The message `configure` prints to root names the product.
+ROOT_MSG = ("administrator level VyOS user", "administrator level user")
+edit(at("/opt/vyatta/share/vyatta-op/templates/configure/node.def"), [ROOT_MSG + (1,)])
+
+# The CLI reads help, completion and defaults from generated caches as well as
+# from the templates, so the same strings are rewritten there. JSON caches are
+# walked by key, so a value that happens to contain the name elsewhere, such as
+# a path, is left alone.
+def rename_json(path):
+    with open(path, encoding="utf-8") as f:
+        doc = json.load(f)
+    counts = {"help": 0, "default": 0, "command": 0}
+
+    def walk(o):
+        if isinstance(o, dict):
+            for k, v in o.items():
+                if isinstance(v, str) and "VyOS" in v:
+                    if k in ("help", "help_text"):
+                        o[k] = v.replace("VyOS", NAME)
+                        counts["help"] += 1
+                    elif k == "default_value" and v == "VyOS":
+                        o[k] = NAME
+                        counts["default"] += 1
+                    elif k == "command" and ROOT_MSG[0] in v:
+                        o[k] = v.replace(*ROOT_MSG)
+                        counts["command"] += 1
+                else:
+                    walk(v)
+        elif isinstance(o, list):
+            for v in o:
+                walk(v)
+
+    walk(doc)
+    with open(path, "w", encoding="utf-8") as f:
+        json.dump(doc, f, ensure_ascii=False, separators=(",", ":"))
+    return counts
+
+
+c = rename_json(at("/usr/share/vyos/op_cache.json"))
+if c["help"] == 0 or c["command"] != 1:
+    sys.exit(f"E: op_cache.json: unexpected rewrite counts {c}")
+c = rename_json(at("/usr/share/vyos/reftree.cache"))
+if c["help"] == 0 or c["default"] != 1:
+    sys.exit(f"E: reftree.cache: unexpected rewrite counts {c}")
+
+# The same caches as Python literals, used by the op-mode and config readers.
+HELP_TEXT = re.compile(r"('help_text': ')((?:[^'\\]|\\.)*)'")
+
+
+def rename_help_text(m):
+    return m.group(1) + m.group(2).replace("VyOS", NAME) + "'"
+
+
+op_cache = at("/usr/lib/python3/dist-packages/vyos/xml_ref/op_cache.py")
+with open(op_cache, encoding="utf-8") as f:
+    text = f.read()
+before = text.count("VyOS")
+text = HELP_TEXT.sub(rename_help_text, text)
+if text.count(ROOT_MSG[0]) != 1:
+    sys.exit(f"E: {op_cache}: expected one {ROOT_MSG[0]!r}")
+text = text.replace(*ROOT_MSG)
+if before == 0 or "VyOS" in text:
+    sys.exit(f"E: {op_cache}: {text.count('VyOS')} of {before} mentions left after the rewrite")
+with open(op_cache, "w", encoding="utf-8") as f:
+    f.write(text)
+drop_bytecode(op_cache)
+
+cfg_cache = at("/usr/lib/python3/dist-packages/vyos/xml_ref/pkg_cache/vyos_1x_cache.py")
+edit(cfg_cache, [("'default_value': 'VyOS'", f"'default_value': '{NAME}'", 1)])
+drop_bytecode(cfg_cache)
 
 eula = at("/usr/share/vyos/EULA")
 if not os.path.exists(eula):
