@@ -37,3 +37,7 @@ lint:
 
 clean:
 	rm -rf $(OUT)
+
+# `make -s print-VYOS_BUILD_REF`, for workflows that need a pin's value.
+print-%:
+	@echo '$($*)'
