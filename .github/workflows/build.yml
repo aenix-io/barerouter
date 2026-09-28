@@ -54,5 +54,6 @@ jobs:
             _out/barerouter-*.cdx.json
             _out/barerouter-*.spdx.json
             _out/barerouter-*.packages.tsv
+            _out/barerouter-*.sources.md
           retention-days: 7
           if-no-files-found: error

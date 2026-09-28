@@ -53,9 +53,11 @@ docker run --rm -i \
       --version "$2" \
       generic
     sudo chown -R "$(id -u):$(id -g)" .
-    # The package list the source bundle is built from, read from the chroot
-    # live-build leaves behind, because that is what went into the squashfs.
-    dpkg-query --admindir=build/chroot/var/lib/dpkg -W \
+    # The package list the source manifest is built from. It is read from the
+    # dpkg database inside the squashfs that ships: the chroot live-build
+    # leaves behind lists fewer than half of the installed packages.
+    unsquashfs -q -n -d /tmp/shipped build/binary/live/filesystem.squashfs var/lib/dpkg/status
+    dpkg-query --admindir=/tmp/shipped/var/lib/dpkg -W \
       -f "\${Package}\t\${Version}\t\${source:Package}\t\${source:Version}\n" \
       | sort > build/packages.tsv
   ' -- "$ARCH" "$VERSION" "$VYOS_MIRROR" "$SYFT_VERSION" "$SYFT_SHA256"
@@ -78,6 +80,7 @@ if [ ! -s "${WORK}/build/packages.tsv" ]; then
   exit 1
 fi
 cp "${WORK}/build/packages.tsv" "${DEST}/${NAME}.packages.tsv"
+python3 "${REPO_ROOT}/hack/source-manifest.py" "${DEST}/${NAME}.packages.tsv" "${DEST}/${NAME}.sources.md" "$VERSION"
 
 (cd "$DEST" && sha256sum "${NAME}.iso" > "${NAME}.iso.sha256")
 echo "I: ${DEST}/${NAME}.iso"

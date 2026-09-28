@@ -14,6 +14,7 @@ barerouter is not produced, endorsed or supported by VyOS Inc. VyOS and the VyOS
 - `barerouter-<version>-amd64.iso` and its `.sha256`
 - `barerouter-<version>-amd64.cdx.json` and `.spdx.json`, the SBOM in CycloneDX and SPDX
 - `barerouter-<version>-amd64.packages.tsv`, every installed binary package with its source package and version
+- `barerouter-<version>-amd64.sources.md`, where the source of each of those packages is: the snapshot.debian.org page of the exact Debian source version, or the VyOS repository and the vyos-build scripts it was built from
 
 ## Building
 
