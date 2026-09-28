@@ -21,6 +21,7 @@ jobs:
     timeout-minutes: 150
     permissions:
       contents: write
+      packages: write
     steps:
       - name: Checkout
         uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
@@ -52,17 +53,35 @@ jobs:
       - name: Check branding
         run: make check
 
+      - name: Build KubeVirt disk
+        run: make disk
+
+      - name: Check KubeVirt disk
+        run: make check-disk
+
+      - name: Push containerDisk
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          set -euo pipefail
+          printf '%s' "$GH_TOKEN" | docker login ghcr.io -u "$GITHUB_ACTOR" --password-stdin
+          make disk-image PUSH=1
+
       - name: Publish
         env:
           GH_TOKEN: ${{ github.token }}
         run: |
           set -euo pipefail
           name="barerouter-${VERSION}-amd64"
+          disk="barerouter-${VERSION}-kubevirt-amd64"
           vyos1x="$(awk -F'\t' '$1 == "vyos-1x" {print $2}' "_out/${name}.packages.tsv")"
+          digest="$(jq -r '."containerimage.digest"' _out/disk-image.json)"
           {
             echo "Built from vyos/vyos-build \`$(make -s print-VYOS_BUILD_REF)\` in \`$(make -s print-VYOS_BUILD_IMAGE)\`, with vyos-1x \`${vyos1x}\`."
             echo
-            echo "Where the source of every package in the image is: \`${name}.sources.md\`."
+            echo "KubeVirt containerDisk: \`$(make -s print-DISK_IMAGE):${VERSION}@${digest}\`."
+            echo
+            echo "Where the source of every package is: \`${name}.sources.md\` for the ISO, \`${disk}.sources.md\` for the disk."
           } > "_out/release-notes.md"
           gh release create "$TAG" \
             --repo "$GITHUB_REPOSITORY" \
@@ -74,4 +93,7 @@ jobs:
             "_out/${name}.cdx.json" \
             "_out/${name}.spdx.json" \
             "_out/${name}.packages.tsv" \
-            "_out/${name}.sources.md"
+            "_out/${name}.sources.md" \
+            "_out/${disk}.qcow2" \
+            "_out/${disk}.qcow2.sha256" \
+            "_out/${disk}.sources.md"

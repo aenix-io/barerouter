@@ -37,8 +37,12 @@ This file provides structured guidance for AI coding assistants and agents worki
 - `hack/debrand-tree.py` - edits the vyos-build checkout: os-release, boot menus, ISO labels, artwork, the EULA include
 - `debrand/chroot/99-barerouter-debrand.chroot` - live-build hook that replaces the name in the text vyos-1x installs
 - `debrand/NOTICE.image` - the notice the image carries at `/usr/share/vyos/EULA`, which `show license` prints
-- `hack/check-branding.sh` - fails when a built image still shows the VyOS name or artwork
-- `hack/collect-sources.sh` - assembles the source bundle a release must carry
+- `hack/check-branding.sh` - fails when a built ISO still shows the VyOS name or artwork
+- `hack/source-manifest.py` - writes where the source of every package in the ISO is
+- `hack/build-disk.sh` - installs the ISO onto a disk and adds the KubeVirt appliance from `kubevirt/`
+- `kubevirt/` - the appliance layer: NoCloud config seed, config report, guest agent, bootloader lock; its contract is in [`kubevirt.md`](./docs/kubevirt.md)
+- `hack/check-disk.sh` - fails when the KubeVirt disk shows the VyOS name in its boot entries, GRUB configuration or appliance files
+- `hack/test-appliance.sh` - the two ways the bootloader lock can fail open silently
 - `hack/check-commit-trailers.sh` - commit attribution check, the same script as in cozystack
 
 ### Conventions

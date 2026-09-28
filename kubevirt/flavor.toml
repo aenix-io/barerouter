@@ -1,0 +1,12 @@
+# build-vyos-image flavor for the KubeVirt disk. It is only ever used with
+# --reuse-iso on the barerouter ISO, which skips live-build, so of all flavor
+# keys only the ones create_raw_image reads have any effect: the disk format,
+# its size and the boot console. Everything the appliance adds on top is done
+# by inject-appliance.sh.
+image_format = ["qcow2"]
+disk_size = 10
+
+[boot_settings]
+console_type = "ttyS"
+console_num = "0"
+console_speed = "115200"

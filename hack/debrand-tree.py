@@ -74,6 +74,14 @@ edit("scripts/image-build/build-vyos-image", [
     ("hostname=vyos username=live", "hostname=barerouter username=live", 1),
 ])
 
+# The disk build installs GRUB through a vyos-1x checkout of its own rather
+# than through the image, so the EFI boot entry takes that checkout's default id
+# unless it is passed here.
+edit("scripts/image-build/raw_image.py", [
+    ("grub.install(con.loop_device, f'/boot/', f'/boot/efi', chroot=con.squash_dir)",
+     f"grub.install(con.loop_device, f'/boot/', f'/boot/efi', id='{NAME}', chroot=con.squash_dir)", 1),
+])
+
 edit("data/live-build-config/includes.binary/isolinux/menu.cfg", [
     ("menu title VyOS - Boot Menu", f"menu title {NAME} - Boot Menu", 1),
 ])

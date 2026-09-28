@@ -27,11 +27,11 @@ jobs:
         with:
           persist-credentials: false
 
-      - name: shellcheck
-        run: shellcheck hack/*.sh
+      - name: Lint
+        run: make lint
 
-      - name: Python syntax
-        run: python3 -m py_compile hack/*.py debrand/chroot/*.chroot
+      - name: Appliance bootloader lock
+        run: hack/test-appliance.sh
 
   # Commit-message lint for the attribution rules in docs/agents/contributing.md
   # that a reviewer would otherwise have to read `git log` to catch. It lives

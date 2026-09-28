@@ -44,6 +44,17 @@ jobs:
       - name: Check branding
         run: make check
 
+      - name: Build KubeVirt disk
+        run: make disk
+
+      - name: Check KubeVirt disk
+        run: make check-disk
+
+      # Built but not pushed: a pull request proves the containerDisk builds,
+      # only a release publishes it.
+      - name: Build containerDisk
+        run: make disk-image
+
       - name: Upload image
         uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
         with:
@@ -51,6 +62,8 @@ jobs:
           path: |
             _out/barerouter-*.iso
             _out/barerouter-*.iso.sha256
+            _out/barerouter-*.qcow2
+            _out/barerouter-*.qcow2.sha256
             _out/barerouter-*.cdx.json
             _out/barerouter-*.spdx.json
             _out/barerouter-*.packages.tsv

@@ -15,6 +15,7 @@ barerouter is not produced, endorsed or supported by VyOS Inc. VyOS and the VyOS
 - `barerouter-<version>-amd64.cdx.json` and `.spdx.json`, the SBOM in CycloneDX and SPDX
 - `barerouter-<version>-amd64.packages.tsv`, every installed binary package with its source package and version
 - `barerouter-<version>-amd64.sources.md`, where the source of each of those packages is: the snapshot.debian.org page of the exact Debian source version, or the VyOS repository and the vyos-build scripts it was built from
+- `barerouter-<version>-kubevirt-amd64.qcow2`, its `.sha256` and `.sources.md`, and the same disk as the containerDisk `ghcr.io/cozystack/barerouter/kubevirt-disk:<version>`: the ISO installed and turned into a KubeVirt appliance, described in [`docs/kubevirt.md`](./docs/kubevirt.md). The ISO itself is published unmodified.
 
 ## Building
 
@@ -25,9 +26,12 @@ make verify-pin      # the pinned vyos-build commit still matches the kernel on 
 make test-hook       # the debranding hook against the vyos-1x package the mirror serves now
 make iso VERSION=0.1.0
 make check VERSION=0.1.0
+make disk VERSION=0.1.0         # the KubeVirt disk, from the ISO above
+make check-disk VERSION=0.1.0
+make disk-image VERSION=0.1.0   # the containerDisk; PUSH=1 to push it
 ```
 
-`make iso` runs the first two itself. `make check` reads the finished ISO and fails if the VyOS name or artwork is still where a user sees it.
+`make iso` runs the first two itself. `make check` and `make check-disk` read the finished artifacts and fail if the VyOS name or artwork is still where a user sees it.
 
 ## Debranding
 
