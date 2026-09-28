@@ -115,8 +115,12 @@ edit(at("/usr/share/vyos/templates/grub/grub_compat.j2"), [
     ("{% if mode == 'normal' -%}\n    VyOS\n", f"{{% if mode == 'normal' -%}}\n    {NAME}\n", 1),
 ])
 
+# The default NTP servers are run by the VyOS project for its own images.
 edit(at("/usr/share/vyos/config.boot.default"), [
     ('host-name "vyos"', 'host-name "barerouter"', 1),
+    ("server time1.vyos.net {", "server 0.pool.ntp.org {", 1),
+    ("server time2.vyos.net {", "server 1.pool.ntp.org {", 1),
+    ("server time3.vyos.net {", "server 2.pool.ntp.org {", 1),
 ])
 
 # CLI help text. Only `help:` lines are rewritten; command paths and values in
