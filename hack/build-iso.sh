@@ -20,9 +20,13 @@ if [ ! -d "${WORK}/.git" ]; then
   git clone --filter=blob:none https://github.com/vyos/vyos-build.git "$WORK"
 fi
 git -C "$WORK" fetch --depth 1 origin "$VYOS_BUILD_REF"
-git -C "$WORK" checkout --detach "$VYOS_BUILD_REF"
+# Drop the previous build's debranding edits first, or a checkout of a
+# different pin refuses to overwrite them.
 git -C "$WORK" reset --hard --quiet
 git -C "$WORK" clean -xdfq
+# A branch rather than a detached HEAD: build-vyos-image reads the commit and
+# branch for version.json and `show version`, and gets neither when detached.
+git -C "$WORK" checkout -q -B rolling "$VYOS_BUILD_REF"
 
 python3 "${REPO_ROOT}/hack/debrand-tree.py" "$WORK" "$REPO_ROOT"
 
