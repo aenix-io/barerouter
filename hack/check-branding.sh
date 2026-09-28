@@ -59,11 +59,12 @@ if [ ! -d "${FS}/usr/share/vyos" ]; then
   exit 1
 fi
 
-os_release="${FS}/usr/lib/os-release"
-[ -f "$os_release" ] || os_release="${FS}/etc/os-release"
-grep -q '^NAME="BareRouter"$' "$os_release" || report "os-release does not name BareRouter"
+# build-vyos-image writes /etc/os-release; usr/lib/os-release is Debian's own
+# from base-files and names Debian.
+grep -q '^NAME="BareRouter"$' "${FS}/etc/os-release" || report "etc/os-release does not name BareRouter"
 
 surfaces=(
+  etc/os-release
   usr/lib/os-release
   usr/share/vyos/EULA
   usr/share/vyos/version.json
