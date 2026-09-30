@@ -32,7 +32,7 @@ cleanup() {
     umount "$MERGED" 2>/dev/null || true
     umount "$LOW" 2>/dev/null || true
     umount "$MNT" 2>/dev/null || true
-    [ -n "$LOOP" ] && losetup -d "$LOOP" 2>/dev/null || true
+    if [ -n "$LOOP" ]; then losetup -d "$LOOP" 2>/dev/null || true; fi
     rmdir "$MERGED" "$LOW" "$MNT" 2>/dev/null || true
 }
 trap cleanup EXIT

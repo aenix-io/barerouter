@@ -77,7 +77,7 @@ if [ ! -f "$STATUS_FILE" ]; then
     exit 0
 fi
 
-status="$(cat "$STATUS_FILE" 2>/dev/null | tr -d '[:space:]')"
+status="$(tr -d '[:space:]' 2>/dev/null <"$STATUS_FILE")"
 if [ "$status" = "0" ]; then
     log "configuration loaded and committed"
     diag_inventory
