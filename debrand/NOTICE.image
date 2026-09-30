@@ -1,0 +1,26 @@
+BareRouter
+
+This image is built by the barerouter project
+(https://github.com/aenix-io/barerouter) from the public rolling-release
+sources published at https://github.com/vyos. It is not produced, endorsed or
+supported by the authors of those sources, and it carries none of their
+trademarks or logos.
+
+The image is a collection of free software components. Each component is
+licensed under its own terms; the license of every installed package is under
+/usr/share/doc/<package>/copyright. Where the source of each package is, is
+listed in the sources file published next to the image on the barerouter
+release page.
+
+WRITTEN OFFER
+
+For at least three years from the date the barerouter release containing this
+image was published, AENIX s.r.o. will give any third party, for a charge no
+more than the cost of physically performing the distribution, a complete
+machine-readable copy of the corresponding source code of every program in this
+image that is licensed under the GNU General Public License or the GNU Lesser
+General Public License, on a medium customarily used for software interchange.
+Send requests to info@aenix.io, naming the barerouter release.
+
+THERE IS NO WARRANTY FOR THIS SOFTWARE, TO THE EXTENT PERMITTED BY APPLICABLE
+LAW.

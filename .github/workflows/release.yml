@@ -1,0 +1,110 @@
+name: Release
+
+# Build the image for a vX.Y.Z tag and publish every artifact of that one run
+# as the GitHub release. docs/releasing.md has the procedure.
+on:
+  push:
+    tags:
+      - 'v*'
+  workflow_dispatch:
+
+concurrency:
+  group: release-${{ github.ref }}
+  cancel-in-progress: false
+
+permissions:
+  contents: read
+
+jobs:
+  release:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 150
+    permissions:
+      contents: write
+      packages: write
+    steps:
+      - name: Checkout
+        uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
+        with:
+          persist-credentials: false
+
+      - name: Resolve version
+        env:
+          REF_NAME: ${{ github.ref_name }}
+          REF_TYPE: ${{ github.ref_type }}
+        run: |
+          set -euo pipefail
+          if [ "$REF_TYPE" != tag ] || ! printf '%s' "$REF_NAME" | grep -qE '^v[0-9]+\.[0-9]+\.[0-9]+(-[0-9A-Za-z.]+)?$'; then
+            echo "::error::a release is built from a vX.Y.Z tag, not from ${REF_TYPE} ${REF_NAME}"
+            exit 1
+          fi
+          echo "VERSION=${REF_NAME#v}" >> "$GITHUB_ENV"
+          echo "TAG=${REF_NAME}" >> "$GITHUB_ENV"
+
+      # The GPL packages VyOS builds are only pointed to, not shipped as source,
+      # which needs the written offer in the image's notice (docs/releasing.md).
+      - name: Require the written offer
+        run: |
+          if ! grep -q '^WRITTEN OFFER' debrand/NOTICE.image; then
+            echo "::error::debrand/NOTICE.image carries no written offer for the corresponding source; see docs/releasing.md"
+            exit 1
+          fi
+
+      - name: Free disk space
+        run: sudo rm -rf /usr/share/dotnet /usr/local/lib/android /opt/ghc /opt/hostedtoolcache/CodeQL
+
+      - name: Install tools
+        run: sudo apt-get update && sudo apt-get install -y p7zip-full
+
+      - name: Build
+        run: make iso
+
+      - name: Check branding
+        run: make check
+
+      - name: Build KubeVirt disk
+        run: make disk
+
+      - name: Check KubeVirt disk
+        run: make check-disk
+
+      - name: Push containerDisk
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          set -euo pipefail
+          printf '%s' "$GH_TOKEN" | docker login ghcr.io -u "$GITHUB_ACTOR" --password-stdin
+          make disk-image PUSH=1
+
+      - name: Publish
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          set -euo pipefail
+          name="barerouter-${VERSION}-amd64"
+          disk="barerouter-${VERSION}-kubevirt-amd64"
+          vyos1x="$(awk -F'\t' '$1 == "vyos-1x" {print $2}' "_out/${name}.packages.tsv")"
+          digest="$(jq -r '."containerimage.digest"' _out/disk-image.json)"
+          {
+            echo "Built from vyos/vyos-build \`$(make -s print-VYOS_BUILD_REF)\` in \`$(make -s print-VYOS_BUILD_IMAGE)\`, with vyos-1x \`${vyos1x}\`."
+            echo
+            echo "KubeVirt containerDisk: \`$(make -s print-DISK_IMAGE):${VERSION}@${digest}\`."
+            echo
+            echo "Where the source of every package is: \`${name}.sources.md\` for the ISO, \`${disk}.sources.md\` for the disk."
+          } > "_out/release-notes.md"
+          gh release create "$TAG" \
+            --repo "$GITHUB_REPOSITORY" \
+            --title "$TAG" \
+            --notes-file "_out/release-notes.md" \
+            --verify-tag \
+            "_out/${name}.iso" \
+            "_out/${name}.iso.sha256" \
+            "_out/${name}.cdx.json" \
+            "_out/${name}.spdx.json" \
+            "_out/${name}.packages.tsv" \
+            "_out/${name}.sources.md" \
+            "_out/${name}.vyos-build.tar.gz" \
+            "_out/${name}.refs.lock" \
+            "_out/${disk}.qcow2" \
+            "_out/${disk}.qcow2.sha256" \
+            "_out/${disk}.sources.md"

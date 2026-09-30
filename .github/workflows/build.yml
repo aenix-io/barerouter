@@ -1,0 +1,74 @@
+name: Build
+
+on:
+  pull_request:
+    types: [opened, synchronize, reopened]
+    # An hour-long build proves nothing about a change to prose.
+    paths-ignore:
+      - '**/*.md'
+      - 'docs/**'
+  workflow_dispatch:
+
+concurrency:
+  group: build-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: true
+
+permissions:
+  contents: read
+
+jobs:
+  image:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 150
+    permissions:
+      contents: read
+    env:
+      VERSION: 0.0.0-ci.${{ github.run_number }}
+    steps:
+      - name: Checkout
+        uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
+        with:
+          persist-credentials: false
+
+      # The vyos-build container, the live-build chroot and the ISO together
+      # outgrow the free space a hosted runner starts with.
+      - name: Free disk space
+        run: sudo rm -rf /usr/share/dotnet /usr/local/lib/android /opt/ghc /opt/hostedtoolcache/CodeQL
+
+      - name: Install tools
+        run: sudo apt-get update && sudo apt-get install -y p7zip-full
+
+      - name: Build
+        run: make iso
+
+      - name: Check branding
+        run: make check
+
+      - name: Build KubeVirt disk
+        run: make disk
+
+      - name: Check KubeVirt disk
+        run: make check-disk
+
+      # Built but not pushed: a pull request proves the containerDisk builds,
+      # only a release publishes it.
+      - name: Build containerDisk
+        run: make disk-image
+
+      - name: Upload image
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
+        with:
+          name: barerouter-${{ env.VERSION }}
+          path: |
+            _out/barerouter-*.iso
+            _out/barerouter-*.iso.sha256
+            _out/barerouter-*.qcow2
+            _out/barerouter-*.qcow2.sha256
+            _out/barerouter-*.cdx.json
+            _out/barerouter-*.spdx.json
+            _out/barerouter-*.packages.tsv
+            _out/barerouter-*.sources.md
+            _out/barerouter-*.vyos-build.tar.gz
+            _out/barerouter-*.refs.lock
+          retention-days: 7
+          if-no-files-found: error
