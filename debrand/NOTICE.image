@@ -12,5 +12,15 @@ licensed under its own terms; the license of every installed package is under
 listed in the sources file published next to the image on the barerouter
 release page.
 
+WRITTEN OFFER
+
+For at least three years from the date the barerouter release containing this
+image was published, AENIX s.r.o. will give any third party, for a charge no
+more than the cost of physically performing the distribution, a complete
+machine-readable copy of the corresponding source code of every program in this
+image that is licensed under the GNU General Public License or the GNU Lesser
+General Public License, on a medium customarily used for software interchange.
+Send requests to info@aenix.io, naming the barerouter release.
+
 THERE IS NO WARRANTY FOR THIS SOFTWARE, TO THE EXTENT PERMITTED BY APPLICABLE
 LAW.
