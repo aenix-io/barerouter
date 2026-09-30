@@ -38,4 +38,4 @@ Whoever gives the offer has to be able to honour it for three years, including w
 
 ## Consumers
 
-cozystack's site-router pins a release by the ISO's URL and SHA256 and turns it into its appliance disk. Moving it to a new release is a pull request there that updates both, and re-captures its `config.boot` from the new image as its own documentation describes.
+cozystack's site-router pins a release's containerDisk by digest and imports it as the gateway's boot disk. Moving it to a new release is a pull request there that updates the pin and re-captures its `config.boot` footer from the new image, as its own documentation describes.
