@@ -18,7 +18,7 @@
 # reachable over the serial console and can be diagnosed; one held in a failed
 # unit is not, and the tunnel is down either way.
 set -u
-log() { echo "vyos-appliance-seed: $*" > /dev/console 2>&1; }
+log() { echo "barerouter-seed: $*" > /dev/console 2>&1; }
 
 DEV=$(blkid -L cidata 2>/dev/null) || DEV=""
 if [ -z "$DEV" ]; then
@@ -26,7 +26,7 @@ if [ -z "$DEV" ]; then
     exit 0
 fi
 
-MNT=/run/vyos-appliance-seed
+MNT=/run/barerouter-seed
 mkdir -p "$MNT"
 if ! mount -o ro "$DEV" "$MNT" 2>/dev/null; then
     log "E: found $DEV but could not mount it; config not seeded"

@@ -26,7 +26,7 @@ STATUS_FILE=/tmp/vyos-config-status
 WAIT=240
 MAX=40
 
-log() { echo "vyos-appliance-config-report: $*" > /dev/console 2>&1; }
+log() { echo "barerouter-config-report: $*" > /dev/console 2>&1; }
 
 dump() {
     # -o cat drops the syslog preamble; the message is the whole point and the

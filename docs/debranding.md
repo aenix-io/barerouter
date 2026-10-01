@@ -40,7 +40,7 @@ Two steps, both of which refuse to continue when an edit does not match as often
 
 - **Copyright and licence notices.** `Copyright VyOS maintainers and contributors` in source headers and the `Copyright:` line of `show version` are authorship statements the GPL requires to be preserved. Removing them would be the violation.
 - **Code comments and docstrings.** Nobody using the router sees them.
-- **Identifiers.** `ID=vyos` in `os-release`, the `vyos-1x` and other package names, `/usr/libexec/vyos` and every other path, the `vyos` login user, Python module names, and the names of the KubeVirt disk's own units (`vyos-appliance-seed.service` and the rest), which consumers of the disk already refer to. They are how the code finds itself; renaming them is a fork of the code rather than a change of branding, and it breaks every script and config that refers to them.
+- **Identifiers.** `ID=vyos` in `os-release`, the `vyos-1x` and other package names, `/usr/libexec/vyos` and every other path, the `vyos` login user, Python module names, and the names of the KubeVirt disk's own units (`barerouter-seed.service` and the rest), which consumers of the disk already refer to. They are how the code finds itself; renaming them is a fork of the code rather than a change of branding, and it breaks every script and config that refers to them.
 - **Component suppliers in the SBOM.** A package VyOS wrote is attributed to VyOS whoever ships it.
 - **Package origin.** `/etc/apt/sources.list.d` still points at the VyOS rolling repository, because that is where the packages came from.
 

@@ -71,7 +71,7 @@ done
 # (docs/kubevirt.md): a consumer's cron entry names it, and nothing at runtime
 # says anything when the two disagree. cron adds rules of its own that fail just
 # as silently, so they are pinned here against the seed that does the install.
-SEED="${REPO_ROOT}/kubevirt/overlay/vyos-appliance-seed.sh"
+SEED="${REPO_ROOT}/kubevirt/overlay/barerouter-seed.sh"
 EMITTER=/usr/local/sbin/cozy-guest-diag.sh
 installed="$(grep -oE 'install -m 0755 [^ ]+ (/[^ ]+)' "$SEED" | head -1 | awk '{print $NF}')"
 # Not under /config: vyos-router mounts the persistent configuration over it
