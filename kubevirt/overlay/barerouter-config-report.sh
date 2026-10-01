@@ -3,7 +3,7 @@
 #
 # A rejected config.boot reaches the console as the single line "Configuration
 # error". On this appliance nothing can go and read the reason: there is no SSH
-# service, the `vyos` login is locked, and the bootloader is password-protected.
+# service, the `admin` login is locked, and the bootloader is password-protected.
 # The bring-up emitter does not help either, because cron installs it from the
 # configuration that just failed to load. So the console is the only channel and
 # it carries one useless line.

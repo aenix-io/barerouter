@@ -100,4 +100,14 @@ else
   failed=1
 fi
 
+# The disk's baked configuration replaces the image's own default, so it has to
+# carry the debranded login itself; the chroot hook never sees this file.
+BAKED="${REPO_ROOT}/kubevirt/overlay/config.boot.default"
+if grep -q -E '^[[:space:]]+user admin \{$' "$BAKED" && ! grep -q -E 'user vyos \{' "$BAKED"; then
+  echo "ok: the baked configuration's login is admin"
+else
+  echo "FAIL: ${BAKED} does not define the admin login, or still defines vyos" >&2
+  failed=1
+fi
+
 exit "$failed"

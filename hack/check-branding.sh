@@ -98,6 +98,26 @@ if [ -n "$help_hits" ]; then
   done <<<"$help_hits"
 fi
 
+# The default login. A user types it at every console prompt, so upstream's name
+# for it is a surface like the banner, and so is the password named after it.
+login_files=(
+  usr/share/vyos/config.boot.default
+  usr/libexec/vyos/vyos-boot-config-loader.py
+  usr/libexec/vyos/op_mode/image_installer.py
+  usr/lib/python3/dist-packages/vyos/utils/auth.py
+)
+for rel in "${login_files[@]}"; do
+  if [ ! -f "${FS}/${rel}" ]; then
+    report "${rel} is not in the image; the default-login check reads nothing there"
+    continue
+  fi
+  while IFS= read -r hit; do
+    report "default login: ${rel}:${hit}"
+  done < <(grep -n -E "user vyos \{|\"vyos\" user|'user', 'vyos'|DEFAULT_PASSWORD: str = 'vyos'|'vyos' in users" "${FS}/${rel}" || true)
+done
+grep -q -E '^[[:space:]]+user admin \{$' "${FS}/usr/share/vyos/config.boot.default" ||
+  report "usr/share/vyos/config.boot.default: the default login is not admin"
+
 # The generated caches the CLI reads help, completion and defaults from.
 while IFS= read -r hit; do
   report "cache: ${hit}"

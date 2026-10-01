@@ -5,8 +5,9 @@
 #
 # Each edit must match exactly as often as it expects, or the hook fails and
 # takes the build with it. Copyright and licence notices are never touched;
-# identifiers such as ID=vyos, /usr/libexec/vyos and the vyos user are code,
-# not branding, and stay. docs/debranding.md lists both sides.
+# identifiers such as ID=vyos and /usr/libexec/vyos are code, not branding, and
+# stay. The default login is the exception: a user types it at every console
+# prompt, so it is replaced. docs/debranding.md lists both sides.
 import glob
 import json
 import os
@@ -15,6 +16,9 @@ import sys
 
 NAME = "BareRouter"
 REPO_URL = "https://github.com/aenix-io/barerouter"
+# The default login and its password, which upstream sets to its own name.
+LOGIN = "admin"
+LOGIN_HASH = "$6$WfhUZJxg4IW5xZL2$tC2AiCMUf0rkvFfrJYqomKSEDFFU/6s6red92qerZC9qX0YdJkwhmoKvzKOvdk939PexkQc5Cj5iRvlB/342B1"
 # "/" inside the live-build chroot; hack/test-debrand-hook.sh points it at an
 # unpacked vyos-1x package instead.
 ROOT = os.environ.get("DEBRAND_ROOT", "/")
@@ -121,6 +125,25 @@ edit(at("/usr/share/vyos/config.boot.default"), [
     ("server time1.vyos.net {", "server 0.pool.ntp.org {", 1),
     ("server time2.vyos.net {", "server 1.pool.ntp.org {", 1),
     ("server time3.vyos.net {", "server 2.pool.ntp.org {", 1),
+    ("user vyos {", f"user {LOGIN} {{", 1),
+])
+edit_re(at("/usr/share/vyos/config.boot.default"),
+        r'encrypted-password "[^"]*"', f'encrypted-password "{LOGIN_HASH}"', 1)
+
+# Everything else that names the default login: the password the CLI warns
+# about, the account the boot loader recreates when the configuration fails to
+# load, the prompts and config path of `install image`, and the hostname a
+# configuration without one gets.
+auth = at("/usr/lib/python3/dist-packages/vyos/utils/auth.py")
+edit(auth, [("DEFAULT_PASSWORD: str = 'vyos'", f"DEFAULT_PASSWORD: str = '{LOGIN}'", 1)])
+drop_bytecode(auth)
+edit(at("/usr/libexec/vyos/vyos-boot-config-loader.py"), [("'vyos'", f"'{LOGIN}'", 5)])
+edit(at("/usr/libexec/vyos/op_mode/image_installer.py"), [
+    ('"vyos" user', f'"{LOGIN}" user', 2),
+    ("'system', 'login', 'user', 'vyos',", f"'system', 'login', 'user', '{LOGIN}',", 1),
+])
+edit(at("/usr/libexec/vyos/conf_mode/system_host-name.py"), [
+    ("'hostname': 'vyos',", "'hostname': 'barerouter',", 1),
 ])
 
 # CLI help text. Only `help:` lines are rewritten; command paths and values in

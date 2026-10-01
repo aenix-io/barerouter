@@ -36,7 +36,7 @@ make disk-image VERSION=0.1.0   # the containerDisk; PUSH=1 to push it
 
 ## Debranding
 
-What is replaced, what is deliberately kept and why is in [`docs/debranding.md`](./docs/debranding.md). In short: the name and artwork a user sees are replaced; copyright and licence notices, code comments and identifiers such as `ID=vyos`, `/usr/libexec/vyos` or the `vyos` user are not branding and stay.
+What is replaced, what is deliberately kept and why is in [`docs/debranding.md`](./docs/debranding.md). In short: the name and artwork a user sees are replaced; copyright and licence notices, code comments and identifiers such as `ID=vyos` or `/usr/libexec/vyos` are not branding and stay. The default login is `admin`, password `admin`.
 
 ## License
 

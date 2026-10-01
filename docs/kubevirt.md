@@ -16,7 +16,7 @@ These are the interface a consumer builds on, so a change to any of them is a br
 - **Configuration report.** `barerouter-config-report.service` prints on the console why a configuration was rejected, which upstream reports only as "Configuration error".
 - **Guest agent.** `qemu-guest-agent` from Debian.
 - **Locked bootloader.** GRUB `superusers` with a password generated at build time and discarded, so the boot command line, entry editing and the password reset entry are unreachable from the console; the normal boot entries are marked `--unrestricted` so the VM still boots unattended. `hack/test-appliance.sh` covers the two ways this can fail open silently.
-- **Default configuration.** `kubevirt/overlay/config.boot.default`: the image's own default with `eth0` on DHCP and the `vyos` login locked. It is what the router runs when no seed is present.
+- **Default configuration.** `kubevirt/overlay/config.boot.default`: the image's own default with `eth0` on DHCP and the `admin` login locked. It is what the router runs when no seed is present.
 
 ## Moving the pin
 

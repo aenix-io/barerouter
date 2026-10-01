@@ -43,7 +43,7 @@ system {
                 allow "*"
             }
         }
-        user vyos {
+        user admin {
             authentication {
                 encrypted-password "*"
             }
