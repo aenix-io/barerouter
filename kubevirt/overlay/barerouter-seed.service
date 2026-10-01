@@ -1,6 +1,6 @@
 [Unit]
 Description=Seed the router configuration from the NoCloud disk
-Documentation=file:///usr/local/sbin/vyos-appliance-seed.sh
+Documentation=file:///usr/local/sbin/barerouter-seed.sh
 # Ordering is the whole contract: vyos-router reads
 # /opt/vyatta/etc/config/config.boot when it starts, so the file has to be in
 # place before it does. udev must have settled first or blkid cannot see the
@@ -13,7 +13,7 @@ Before=vyos-router.service
 [Service]
 Type=oneshot
 RemainAfterExit=yes
-ExecStart=/usr/local/sbin/vyos-appliance-seed.sh
+ExecStart=/usr/local/sbin/barerouter-seed.sh
 
 [Install]
 WantedBy=vyos.target

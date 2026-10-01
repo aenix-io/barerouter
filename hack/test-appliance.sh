@@ -71,7 +71,7 @@ done
 # (docs/kubevirt.md): a consumer's cron entry names it, and nothing at runtime
 # says anything when the two disagree. cron adds rules of its own that fail just
 # as silently, so they are pinned here against the seed that does the install.
-SEED="${REPO_ROOT}/kubevirt/overlay/vyos-appliance-seed.sh"
+SEED="${REPO_ROOT}/kubevirt/overlay/barerouter-seed.sh"
 EMITTER=/usr/local/sbin/cozy-guest-diag.sh
 installed="$(grep -oE 'install -m 0755 [^ ]+ (/[^ ]+)' "$SEED" | head -1 | awk '{print $NF}')"
 # Not under /config: vyos-router mounts the persistent configuration over it
@@ -97,6 +97,16 @@ if grep -q 'if install -m 0755' "$SEED"; then
   echo "ok: the seed checks the emitter install before reporting it"
 else
   echo "FAIL: the seed reports the emitter install without checking it" >&2
+  failed=1
+fi
+
+# The disk's baked configuration replaces the image's own default, so it has to
+# carry the debranded login itself; the chroot hook never sees this file.
+BAKED="${REPO_ROOT}/kubevirt/overlay/config.boot.default"
+if grep -q -E '^[[:space:]]+user admin \{$' "$BAKED" && ! grep -q -E 'user vyos \{' "$BAKED"; then
+  echo "ok: the baked configuration's login is admin"
+else
+  echo "FAIL: ${BAKED} does not define the admin login, or still defines vyos" >&2
   failed=1
 fi
 

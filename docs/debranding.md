@@ -29,7 +29,8 @@ Two steps, both of which refuse to continue when an edit does not match as often
 | HTTP API title and greeting | `services/vyos-http-api-server` | `BareRouter` |
 | EFI bootloader id | `vyos/system/grub.py`, and `scripts/image-build/raw_image.py`, which installs GRUB on the KubeVirt disk through a vyos-1x checkout of its own | `BareRouter` |
 | GRUB compat menu entry and header | `templates/grub/grub_compat.j2` | `BareRouter` |
-| default hostname | `config.boot.default` | `barerouter` |
+| default hostname | `config.boot.default`, and `conf_mode/system_host-name.py` for a configuration that sets none | `barerouter` |
+| default login and its password, both upstream's own name | `config.boot.default`; the account the boot loader recreates when the configuration fails to load (`vyos-boot-config-loader.py`); the prompts and config path of `install image` (`op_mode/image_installer.py`); the default password the CLI warns about (`vyos/utils/auth.py`) | `admin`, password `admin` |
 | default NTP servers, run by the VyOS project for its own images | `config.boot.default` | `0.pool.ntp.org` to `2.pool.ntp.org` |
 | CLI help text | `help:` lines of the `node.def` templates, `help`/`help_text` in `op_cache.json`, `op_cache.py` and `reftree.cache` | `BareRouter` |
 | the message `configure` prints to root | `configure/node.def`, `op_cache.json`, `op_cache.py` | no product name |
@@ -40,7 +41,7 @@ Two steps, both of which refuse to continue when an edit does not match as often
 
 - **Copyright and licence notices.** `Copyright VyOS maintainers and contributors` in source headers and the `Copyright:` line of `show version` are authorship statements the GPL requires to be preserved. Removing them would be the violation.
 - **Code comments and docstrings.** Nobody using the router sees them.
-- **Identifiers.** `ID=vyos` in `os-release`, the `vyos-1x` and other package names, `/usr/libexec/vyos` and every other path, the `vyos` login user, Python module names, and the names of the KubeVirt disk's own units (`vyos-appliance-seed.service` and the rest), which consumers of the disk already refer to. They are how the code finds itself; renaming them is a fork of the code rather than a change of branding, and it breaks every script and config that refers to them.
+- **Identifiers.** `ID=vyos` in `os-release`, the `vyos-1x` and other package names, `/usr/libexec/vyos` and every other path, upstream's own systemd units such as `vyos-router.service`, and Python module names. They are how the code finds itself; renaming them is a fork of the code rather than a change of branding, and it breaks every script and config that refers to them. The default login is not on this list although it is an identifier too: a user types it at every console prompt.
 - **Component suppliers in the SBOM.** A package VyOS wrote is attributed to VyOS whoever ships it.
 - **Package origin.** `/etc/apt/sources.list.d` still points at the VyOS rolling repository, because that is where the packages came from.
 

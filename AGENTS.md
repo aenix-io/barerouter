@@ -58,7 +58,7 @@ This file provides structured guidance for AI coding assistants and agents worki
 - ❌ Hardwrap a prose paragraph in markdown, a PR body, or an issue comment
 - ❌ Ship the VyOS name, trademarks or logo artwork as this image's branding, or name an artifact after VyOS
 - ❌ Change a copyright or licence notice in an upstream file; the GPL requires them kept
-- ❌ Rename identifiers such as `ID=vyos`, `/usr/libexec/vyos`, package names or the `vyos` user; they are code, not branding
+- ❌ Rename identifiers such as `ID=vyos`, `/usr/libexec/vyos`, package names or upstream unit names; they are code, not branding. The default login is the one exception, see `docs/debranding.md`
 - ❌ Publish an image without the source bundle built from the same run
 
 ## Prose Formatting

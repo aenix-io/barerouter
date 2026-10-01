@@ -10,7 +10,7 @@ Wants=vyos-router.service
 [Service]
 Type=oneshot
 RemainAfterExit=yes
-ExecStart=/usr/local/sbin/vyos-appliance-config-report.sh
+ExecStart=/usr/local/sbin/barerouter-config-report.sh
 # The script bounds its own wait at 240s and always exits 0. This is the backstop
 # for a hang inside journalctl, and it is longer than that wait so a timeout here
 # means something other than the wait went wrong.
