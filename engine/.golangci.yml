@@ -1,0 +1,59 @@
+version: "2"
+run:
+  allow-parallel-runners: true
+linters:
+  default: none
+  enable:
+    - copyloopvar
+    - depguard
+    - dupl
+    - errcheck
+    - goconst
+    - gocyclo
+    - gosec
+    - govet
+    - ineffassign
+    - lll
+    - misspell
+    - modernize
+    - nakedret
+    - prealloc
+    - revive
+    - staticcheck
+    - unconvert
+    - unparam
+    - unused
+  settings:
+    depguard:
+      rules:
+        forbid-sort-pkg:
+          deny:
+            - pkg: sort
+              desc: Should be replaced with slices package
+    lll:
+      line-length: 160
+    revive:
+      rules:
+        - name: comment-spacings
+        - name: import-shadowing
+    modernize:
+      disable:
+        - omitzero
+  exclusions:
+    rules:
+      # Tables of cases read better with their literals inline, and a test that
+      # repeats the shape of another is clearer than one bent to share it.
+      - path: _test\.go
+        linters:
+          - dupl
+          - goconst
+          - gosec
+      # A configuration path reads best as the appliance's command line spells
+      # it, word by word, rather than through constants for "firewall" or "bgp".
+      - path: (internal/(render|fakeappliance)/|session\.go)
+        linters:
+          - goconst
+formatters:
+  enable:
+    - gofmt
+    - goimports
