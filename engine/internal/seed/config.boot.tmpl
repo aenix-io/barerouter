@@ -1,0 +1,150 @@
+firewall {
+    ipv4 {
+        forward {
+            filter {
+                default-action "drop"
+                rule 5 {
+                    action "accept"
+                    state "established"
+                    state "related"
+                }
+                rule 10 {
+                    action "accept"
+                    ipsec {
+                        match-none-in
+                    }
+                }
+            }
+        }
+        input {
+            filter {
+                default-action "drop"
+                rule 1 {
+                    action "drop"
+                    destination {
+                        port "22,443"
+                    }
+                    ipsec {
+                        match-ipsec-in
+                    }
+                    protocol "tcp"
+                }
+                rule 5 {
+                    action "accept"
+                    state "established"
+                    state "related"
+                }
+{{- if .ManagementAllow }}
+                rule 10 {
+                    action "accept"
+                    destination {
+                        port "443"
+                    }
+                    protocol "tcp"
+                    source {
+                        address "{{ .ManagementAllow }}"
+                    }
+                }
+{{- end }}
+            }
+        }
+    }
+    ipv6 {
+        forward {
+            filter {
+                default-action "drop"
+            }
+        }
+        input {
+            filter {
+                default-action "drop"
+                rule 5 {
+                    action "accept"
+                    state "established"
+                    state "related"
+                }
+                rule 10 {
+                    action "accept"
+                    protocol "ipv6-icmp"
+                }
+            }
+        }
+    }
+}
+interfaces {
+    ethernet eth0 {
+        address "dhcp"
+        description "pod network uplink"
+    }
+    loopback lo {
+    }
+}
+pki {
+    certificate site-router-api {
+        certificate "{{ .Certificate }}"
+        private {
+            key "{{ .PrivateKey }}"
+        }
+    }
+}
+service {
+    https {
+        api {
+            keys {
+                id site-router-controller {
+                    key "{{ .APIKey }}"
+                }
+            }
+            rest {
+            }
+        }
+        certificates {
+            certificate "site-router-api"
+        }
+        listen-address "0.0.0.0"
+    }
+    ntp {
+        server 0.pool.ntp.org {
+        }
+        server 1.pool.ntp.org {
+        }
+        server 2.pool.ntp.org {
+        }
+    }
+}
+system {
+    config-management {
+        commit-revisions "100"
+    }
+    console {
+        device ttyS0 {
+            speed "115200"
+        }
+    }
+    host-name "{{ .HostName }}"
+    login {
+        user {{ .Login }} {
+            authentication {
+                encrypted-password "*"
+            }
+        }
+    }
+    option {
+        reboot-on-upgrade-failure "5"
+    }
+    syslog {
+        local {
+            facility all {
+                level "info"
+            }
+            facility local7 {
+                level "debug"
+            }
+        }
+    }
+}
+
+
+// Warning: Do not remove the following line.
+// vyos-config-version: "{{ .ConfigVersion }}"
+// Release version: {{ .Version }}

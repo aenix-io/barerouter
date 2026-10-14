@@ -1,0 +1,16 @@
+eth0: <BROADCAST,MULTICAST,UP,LOWER_UP> mtu 1500 qdisc fq_codel state UP group default qlen 1000
+    link/ether 52:54:00:11:22:33 brd ff:ff:ff:ff:ff:ff
+    inet 203.0.113.10/24 brd 203.0.113.255 scope global dynamic eth0
+       valid_lft 85994sec preferred_lft 85994sec
+    RX:  bytes  packets  errors  dropped  overrun       mcast
+      56735451   179841       0        0        0      142380
+    TX:  bytes  packets  errors  dropped  carrier  collisions
+       5601460    62595       0        0        0           0
+eth1: <BROADCAST,MULTICAST,UP,LOWER_UP> mtu 1500 qdisc fq_codel state UP group default qlen 1000
+    link/ether 52:54:00:AA:BB:CC brd ff:ff:ff:ff:ff:ff
+    inet 10.0.0.1/24 brd 10.0.0.255 scope global eth1
+eth1.100@eth1: <BROADCAST,MULTICAST,UP,LOWER_UP> mtu 1500 qdisc noqueue state UP group default qlen 1000
+    link/ether 52:54:00:aa:bb:cc brd ff:ff:ff:ff:ff:ff
+lo: <LOOPBACK,UP,LOWER_UP> mtu 65536 qdisc noqueue state UNKNOWN group default qlen 1000
+    link/loopback 00:00:00:00:00:00 brd 00:00:00:00:00:00
+    inet 127.0.0.1/8 scope host lo

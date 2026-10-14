@@ -21,11 +21,23 @@ The container digest moves the same way: read the digest of `vyos/vyos-build:rol
 
 ## Cutting a release
 
-1. Merge everything the release should carry into `main` and wait for `build.yml` to pass on it.
-2. Tag `main`: `git tag -s vX.Y.Z -m vX.Y.Z` and push the tag.
+1. Merge everything the release should carry into `main`, the release added to the engine among it (see [The engine module](#the-engine-module)), and wait for `build.yml` and `engine.yml` to pass on it.
+2. Tag `main` for the image: `git tag -s vX.Y.Z -m vX.Y.Z`, and push the tag. The engine is tagged on its own, see [The engine module](#the-engine-module).
 3. `release.yml` publishes the release. If it fails after the build, fix the cause and re-run the workflow for the same tag; do not move the tag.
 
 A tag can stop being rebuildable: once the mirror drops the kernel its pin names, re-running `release.yml` for it fails. The published release stays as it is; a new release moves the pin.
+
+## The engine module
+
+`engine/` is a Go module of its own, `github.com/aenix-io/barerouter/engine`: the engine through which the site-router operator drives a gateway booted from this image. It renders the seed of every release of the image it lists, and it is the code that knows the image's management API, which [`engine/docs/management-api.md`](../engine/docs/management-api.md) describes. It is versioned on its own, apart from the image: a change of the engine that the operator should take is a tag `engine/vX.Y.Z` on `main` (`git tag -s engine/vX.Y.Z -m engine/vX.Y.Z`), since Go finds the version of a module in a subdirectory by a tag that starts with the directory. The releases of the image an engine can seed and drive are what its `Info` lists, and the operator checks the releases in its own configuration against that list when it starts. A release of the image that the engine does not list yet needs a release of the engine first, so tag the engine before the operator is given the image.
+
+To add a release to the engine:
+
+1. Add the version to `images` in `engine/internal/seed/seed.go`, with the login the image's own default configuration locks and the image's configuration version: the component map it writes in the footer when it saves a configuration. Take it from the image `build.yml` built for the pull request, either from a configuration saved on the booted disk or with `vyos.component_version.version_info_from_system()` against the squashfs of the ISO, and never edit it by hand.
+2. When the vyos-build pin moved, check the paths the engine configures against the new image: the seed template and `engine/internal/render` follow the syntax of the vyos-1x the pin installs, as `kubevirt/overlay/config.boot.default` does.
+3. In `engine/`, rewrite the goldens with `go test ./internal/seed/ ./internal/render/ -update`, review their diff, and run `go test -race ./...`.
+
+The packages are not pinned, so the release build can install a vyos-1x whose configuration version differs from the one the pull request's build had. Compare the footer of a configuration saved on the released disk with the engine's before the release is taken into use; when they differ, the next release corrects the engine.
 
 ## Corresponding source
 
@@ -38,4 +50,4 @@ Whoever gives the offer has to be able to honour it for three years, including w
 
 ## Consumers
 
-cozystack's site-router pins a release's containerDisk by digest and imports it as the gateway's boot disk. Moving it to a new release is a pull request there that updates the pin and re-captures its `config.boot` footer from the new image, as its own documentation describes.
+The site-router operator imports a release's containerDisk by digest as the gateway's boot disk, and seeds and drives it through an engine that lists that release. The digest is the operator's configuration, never the engine's: moving to a new build of a release the engine already lists is a change of configuration, and moving to a new release is a build of the operator with an engine that lists it, which is a new `engine/vX.Y.Z`, and the release's digest in its configuration.

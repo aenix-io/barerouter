@@ -1,0 +1,5 @@
+# A workspace that points at a local checkout of the operator's api module is
+# how the engine is developed before that module is tagged. Committed, it
+# would make every build resolve the api from a path that exists on one machine.
+go.work
+go.work.sum

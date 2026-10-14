@@ -1,0 +1,12 @@
+Connections:
+       aws-prod:  203.0.113.15...203.0.113.10  IKEv2, dpddelay=15s, dpdtimeout=30s, dpdaction=clear
+       aws-prod:   local:  [203.0.113.15] uses pre-shared key authentication
+       aws-prod:   remote: [203.0.113.10] uses pre-shared key authentication
+       aws-prod:   child:  10.0.0.0/24 === 172.31.0.0/16 TUNNEL, dpdaction=clear
+Routed Connections:
+     aws-prod-tunnel-1:  10.0.0.0/24|<=>|172.31.0.0/16
+Security Associations (1 up, 0 connecting):
+       aws-prod[42]: ESTABLISHED 5 seconds ago, 203.0.113.15[router]...203.0.113.10[peer]
+       aws-prod[42]: IKEv2 SPIs: 9ab... reauth in 53 minutes
+       aws-prod{17}:  INSTALLED, TUNNEL, reqid 1, ESP in UDP SPIs: c4fc8e60_i be9b8866_o
+       aws-prod{17}:   10.0.0.0/24 === 172.31.0.0/16

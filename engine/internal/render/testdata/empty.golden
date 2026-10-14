@@ -1,0 +1,38 @@
+delete firewall ipv4 input filter
+delete firewall ipv4 forward filter
+delete firewall ipv4 name TUNNEL-INGRESS
+delete firewall ipv6 input filter
+delete firewall ipv6 forward filter
+delete vpn ipsec
+delete protocols static route
+delete protocols bgp
+delete interfaces ethernet eth0 ip adjust-mss
+set firewall ipv4 input filter default-action "drop"
+set firewall ipv4 input filter rule 1 action "drop"
+set firewall ipv4 input filter rule 1 destination port "22,443"
+set firewall ipv4 input filter rule 1 ipsec match-ipsec-in
+set firewall ipv4 input filter rule 1 protocol "tcp"
+set firewall ipv4 input filter rule 5 action "accept"
+set firewall ipv4 input filter rule 5 state "established"
+set firewall ipv4 input filter rule 5 state "related"
+set firewall ipv4 forward filter default-action "drop"
+set firewall ipv4 forward filter rule 5 action "accept"
+set firewall ipv4 forward filter rule 5 state "established"
+set firewall ipv4 forward filter rule 5 state "related"
+set firewall ipv4 forward filter rule 10 action "accept"
+set firewall ipv4 forward filter rule 10 ipsec match-none-in
+set firewall ipv4 forward filter rule 20 action "jump"
+set firewall ipv4 forward filter rule 20 ipsec match-ipsec-in
+set firewall ipv4 forward filter rule 20 jump-target "TUNNEL-INGRESS"
+set firewall ipv4 name TUNNEL-INGRESS default-action "drop"
+set firewall ipv4 name TUNNEL-INGRESS rule 5 action "accept"
+set firewall ipv4 name TUNNEL-INGRESS rule 5 state "established"
+set firewall ipv4 name TUNNEL-INGRESS rule 5 state "related"
+set firewall ipv6 input filter default-action "drop"
+set firewall ipv6 input filter rule 5 action "accept"
+set firewall ipv6 input filter rule 5 state "established"
+set firewall ipv6 input filter rule 5 state "related"
+set firewall ipv6 input filter rule 10 action "accept"
+set firewall ipv6 input filter rule 10 protocol "ipv6-icmp"
+set firewall ipv6 forward filter default-action "drop"
+set interfaces ethernet eth0 ip adjust-mss "1280"

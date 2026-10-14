@@ -1,0 +1,2 @@
+Neighbor        V         AS   MsgRcvd   MsgSent   TblVer  InQ OutQ  Up/Down State/PfxRcd   PfxSnt
+10.0.0.1        4      65000       120       118        0    0    0 00:12:00            5        5

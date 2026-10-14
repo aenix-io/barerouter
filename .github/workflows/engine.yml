@@ -1,0 +1,81 @@
+name: Engine
+
+# The Go module in engine/ is tested on its own, in minutes: the hour-long
+# image build proves nothing about it, and it proves nothing about the image.
+on:
+  pull_request:
+    types: [opened, synchronize, reopened]
+    paths:
+      - 'engine/**'
+      - '.github/workflows/engine.yml'
+  push:
+    branches: [main]
+    paths:
+      - 'engine/**'
+      - '.github/workflows/engine.yml'
+
+concurrency:
+  group: engine-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: true
+
+permissions:
+  contents: read
+
+env:
+  GOLANGCI_LINT_VERSION: v2.14.0
+
+jobs:
+  test:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 15
+    permissions:
+      contents: read
+    defaults:
+      run:
+        working-directory: engine
+    steps:
+      - name: Checkout
+        uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
+        with:
+          persist-credentials: false
+
+      - name: Set up Go
+        uses: actions/setup-go@4b73464bb391d4059bd26b0524d20df3927bd417 # v6.3.0
+        with:
+          go-version-file: engine/go.mod
+          cache-dependency-path: engine/go.sum
+
+      - name: Vet
+        run: go vet ./...
+
+      - name: Test
+        run: go test -race ./...
+
+  lint:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 15
+    permissions:
+      contents: read
+    defaults:
+      run:
+        working-directory: engine
+    steps:
+      - name: Checkout
+        uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
+        with:
+          persist-credentials: false
+
+      - name: Set up Go
+        uses: actions/setup-go@4b73464bb391d4059bd26b0524d20df3927bd417 # v6.3.0
+        with:
+          go-version-file: engine/go.mod
+          cache-dependency-path: engine/go.sum
+
+      # Installed by version through the Go checksum database, so the linter
+      # that runs is the one the configuration in engine/.golangci.yml was
+      # written against.
+      - name: Install golangci-lint
+        run: go install "github.com/golangci/golangci-lint/v2/cmd/golangci-lint@${GOLANGCI_LINT_VERSION}"
+
+      - name: Lint
+        run: golangci-lint run ./...
