@@ -19,9 +19,8 @@ limitations under the License.
 //
 //	import _ "github.com/aenix-io/barerouter/engine"
 //
-// The engine is released with the image: a tag of this module goes with the
-// image release of the same version, and Info lists the releases of the image
-// it can seed and drive. Which image the operator boots is the operator's
+// The engine is versioned on its own, apart from the image, and Info lists the
+// releases of the image it can seed and drive. Which image the operator boots is the operator's
 // configuration, never the engine's. docs/management-api.md is what the engine
 // relies on in the image.
 package engine

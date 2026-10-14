@@ -1,6 +1,6 @@
 # What the engine relies on in the image
 
-The engine in this module is how the site-router operator drives a gateway booted from this image. It reaches the gateway in two ways only: the seed, which the image installs at boot (see [`docs/kubevirt.md`](../../docs/kubevirt.md)), and the HTTPS management API, the REST API of the VyOS rolling release the image is built from. This page is everything the engine relies on in both. A release of the image that changes any of it needs a release of the engine that knows, which is why the two are tagged together ([`docs/releasing.md`](../../docs/releasing.md)).
+The engine in this module is how the site-router operator drives a gateway booted from this image. It reaches the gateway in two ways only: the seed, which the image installs at boot (see [`docs/kubevirt.md`](../../docs/kubevirt.md)), and the HTTPS management API, the REST API of the VyOS rolling release the image is built from. This page is everything the engine relies on in both. A release of the image that changes any of it needs a release of the engine that knows ([`docs/releasing.md`](../../docs/releasing.md)).
 
 The operator enables the engine by importing the module, and names it `barerouter` in its configuration:
 
