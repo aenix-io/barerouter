@@ -6,7 +6,7 @@ SHELL := /usr/bin/env bash
 # the day that kernel leaves the mirror. `make verify-pin` compares the two
 # before a build is attempted; docs/releasing.md has the bump procedure.
 VYOS_BUILD_IMAGE ?= vyos/vyos-build:rolling@sha256:482461a415e2fa05b5b1753bfa5490f6fd349585b88be6c23314867b770bb1a0
-VYOS_BUILD_REF   ?= d1394291337eb0274e026145a4c6245207c1c71d
+VYOS_BUILD_REF   ?= 9536a36e32f404b7ab637953ebab74b3fac6815f
 VYOS_MIRROR      ?= https://packages.vyos.net/repositories/rolling
 
 # What the KubeVirt disk installs on top of the ISO. Neither is in the VyOS
