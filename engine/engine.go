@@ -103,6 +103,11 @@ func (e *Engine) bootstrap(r seam.BootstrapRequest) (seam.BootstrapPlan, error) 
 	if len(host) > 63 {
 		host = strings.TrimRight(host[:63], "-")
 	}
+	// The seed refuses a host name of one character, and an instance can be
+	// named with one letter.
+	if len(host) == 1 {
+		host = "gw-" + host
+	}
 
 	var creds map[string][]byte
 	if len(r.Existing) == 0 {

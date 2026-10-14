@@ -106,7 +106,10 @@ var text string
 var tmpl = template.Must(template.New("config.boot").Option("missingkey=error").Parse(text))
 
 var (
-	hostNameRe = regexp.MustCompile(`^[a-z0-9]([-a-z0-9]{0,61}[a-z0-9])?$`)
+	// A host name of one character is refused: an image given one fails to load
+	// its configuration, because the name never gets into /etc/hosts and every
+	// sudo of the load complains that it cannot resolve it.
+	hostNameRe = regexp.MustCompile(`^[a-z0-9][-a-z0-9]{0,61}[a-z0-9]$`)
 	apiKeyRe   = regexp.MustCompile(`^[A-Za-z0-9]{16,128}$`)
 )
 

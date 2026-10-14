@@ -282,6 +282,26 @@ func TestBootstrapSeedsEachVersionAndInstance(t *testing.T) {
 	}
 }
 
+// A SiteRouter can be named with one letter, and the image cannot take a host
+// name of one character.
+func TestBootstrapGivesTheGuestAHostNameOfTwoCharactersOrMore(t *testing.T) {
+	t.Parallel()
+	eng := engine.New()
+	for instance, want := range map[string]string{"a": "gw-a", "ab": "ab", "x.y": "x-y"} {
+		p, err := eng.Bootstrap(seam.BootstrapRequest{Instance: instance, Namespace: "tenant", Version: eng.Info().Versions[0]})
+		if err != nil {
+			t.Fatalf("%q: %v", instance, err)
+		}
+		cfg, err := configtree.ParseBoot(string(p.SeedFiles[seam.SeedUserData]))
+		if err != nil {
+			t.Fatal(err)
+		}
+		if got := configtree.Value(cfg, "system", "host-name"); got != want {
+			t.Errorf("instance %q: host name %q, want %q", instance, got, want)
+		}
+	}
+}
+
 func TestConnectRefuses(t *testing.T) {
 	t.Parallel()
 	r := boot(t, latest(t))

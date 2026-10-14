@@ -270,6 +270,7 @@ func TestSeedRefuses(t *testing.T) {
 		"a host name with a quote":              func(in *seed.Input) { in.HostName = `gw" {` },
 		"a host name with a dot":                func(in *seed.Input) { in.HostName = "gw.ns" },
 		"an empty host name":                    func(in *seed.Input) { in.HostName = "" },
+		"a host name of one character":          func(in *seed.Input) { in.HostName = "a" },
 		"a management network with a newline":   func(in *seed.Input) { in.ManagementAllow = "10.0.0.0/8\n}" },
 		"a management network that is any":      func(in *seed.Input) { in.ManagementAllow = "0.0.0.0/0" },
 		"a management network with host bits":   func(in *seed.Input) { in.ManagementAllow = "10.244.0.1/16" },
