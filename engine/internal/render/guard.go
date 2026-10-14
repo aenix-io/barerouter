@@ -31,12 +31,12 @@ import (
 // the management API renders it in, and takes that JSON to have this shape: a
 // leaf with one value is a string, a leaf with several is a list of strings,
 // and a valueless leaf, such as `disable` or `match-ipsec-in` under `ipsec`, is
-// an empty object. No answer of a real
-// gateway has been captured to confirm it for the leaves the check reads:
-// `state`, `disable`, `ipsec` and `address`. So any other shape of those is a
-// rule the check cannot read, and a filter it does not vouch for. If a real
-// gateway renders one of them otherwise, Confirm reports the filter down until
-// the check learns that shape; it never reports it up.
+// an empty object. Gateways of the 0.1.0 and 0.1.1 images render the leaves the
+// check reads, `state`, `disable`, `ipsec` and `address`, in that shape, and the
+// check read the filter of both as active. Any other shape of those is a rule
+// the check cannot read, and a filter it does not vouch for. If an image renders
+// one of them otherwise, Confirm reports the filter down until the check learns
+// that shape; it never reports it up.
 
 // Allowed is what a state lets the source filter admit.
 type Allowed struct {
