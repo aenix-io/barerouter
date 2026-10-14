@@ -170,8 +170,14 @@ func New(baseURL, apiKey string, opts ...Option) (*Client, error) {
 	return &Client{baseURL: strings.TrimRight(baseURL, "/"), apiKey: apiKey, http: hc}, nil
 }
 
+// requestTimeout bounds one request to the appliance. A command of the 0.1
+// images that needs privileges takes about 20 seconds, because the host name the
+// guest was given does not resolve, and a /configure or a /retrieve can outlast
+// 30 seconds of them.
+const requestTimeout = 90 * time.Second
+
 func (s settings) build() (*http.Client, error) {
-	hc := &http.Client{Timeout: 30 * time.Second}
+	hc := &http.Client{Timeout: requestTimeout}
 	base := http.DefaultTransport
 	if s.client != nil {
 		copied := *s.client

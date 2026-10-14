@@ -20,7 +20,20 @@ import (
 	"net/http"
 	"net/url"
 	"testing"
+	"time"
 )
+
+// The images answer a command that needs privileges in about 20 seconds, and a
+// call that runs a few of them is not an error for that.
+func TestTheDefaultTimeoutOutlastsTheSlowCommandsOfTheImage(t *testing.T) {
+	c, err := New("https://10.244.0.5:443", "key")
+	if err != nil {
+		t.Fatal(err)
+	}
+	if c.http.Timeout < 60*time.Second {
+		t.Errorf("the default timeout is %v, want at least a minute", c.http.Timeout)
+	}
+}
 
 // The address is a pod's, and a proxy named by the environment would receive
 // the key. This reads the transport rather than sending through a proxy: the
